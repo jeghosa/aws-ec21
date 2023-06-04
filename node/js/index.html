@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>server project</title>
+</head>
+<body>
+    <!-- <div><h3>create account</h3></div> -->
+    <form  class="formn">
+        <div>
+            <h3>create account</h3>
+        </div>
+        <input type="text" placeholder="name" name="name" id="name">
+        <input type="email" name="email" placeholder="email" id="email">
+        <input type="password" name="password"  placeholder="password" id="password">
+        <button type="submit" id="sbtn">submit</button>
+    </form>
+    <form class="rform">
+        <h3>login to your account</h3>
+        <!-- <input type="text" name="name" placeholder="name" id="lname"> -->
+        <input type="email" name="email" placeholder="email" id="lemail">
+        <input type="password" name="password" placeholder="password" id="lpassword">
+        <button type="submit" id="lbtn">submit</button>
+    </form>
+    <h2 class="insert1"></h2>
+    <div class="insert2"></div>
+    <!-- <form action="">
+        <input type="text" name="title" id="">
+        <textarea name="comment" id="" cols="30" rows="10"></textarea>
+    </form> -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+ <!-- <script src="./index.js"></script>     -->
+<script>
+    const form = document.querySelector(".formn")
+    const rform = document.querySelector(".rform")
+    
+    const forms = (e) => {
+            e.preventDefault()
+        const rname= document.querySelector("#name").value
+        const  remail= document.querySelector("#email").value
+        const regpassword = document.querySelector("#password").value
+   
+        const getd= async()=>{
+            try {
+                const { data } = await axios.post("/api/v1/register", { name: rname, email: remail, password: regpassword })
+                const token = data.token
+                const user= data.user
+                let cred= {token,user}
+                localStorage.setItem("cred", JSON.stringify(cred))
+                // console.log(cred)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        getd()
+    // console.log(rname,remail,regpassword)
+    
+    }
+    form.addEventListener("submit", forms)
+
+const logform = (e)=>{
+     e.preventDefault()
+    
+    const apply = async() => {
+       
+        const logemail = document.querySelector("#lemail").value
+        const logpassword = document.querySelector("#lpassword").value
+         const cont1 = document.querySelector(".insert1")
+         const cont2 = document.querySelector(".insert2")
+
+        try {
+            let token = JSON.parse(localStorage.getItem("cred")).token
+            const { data } = await axios.post("api/v1/login", { email: logemail, password: logpassword }, { headers: { authorization: `Bearer ${token}` } })
+             cont1.textContent= `welcome ${data.name},create your content`
+            //  console.log(data)
+            //  const userId = data._id
+             const write=`<form class="contentf">
+        <input type="text" placeholder="title" name="title" id="contt">
+        <textarea name="comment" placeholder="comment" id="contxt" cols="30" rows="10"></textarea>
+        <button type="submit" id="">submit</button>
+    </form>`
+    cont2.innerHTML= write
+     const cont3 = document.querySelector(".contentf")
+     const subf= (e)=>{
+        e.preventDefault()
+        let titl = document.querySelector("#contt").value
+        let txt = document.querySelector("#contxt").value
+        // let user = JSON.parse(localStorage.getItem("cred")).user
+        
+      const acon = async()=>{
+        try {
+             let token = JSON.parse(localStorage.getItem("cred")).token
+             await axios.post("/api/v1/content/create", { title: titl, comment: txt }, { headers: { authorization: `Bearer ${token}` } })
+        const {data} =     await axios.get("/api/v1/content/sing", { headers: { authorization: `Bearer ${token}` } })
+              console.log(data)
+        } catch (error) {
+           
+            console.log(error)
+        }
+      }
+       
+      acon()
+
+     }
+     cont3.addEventListener("submit",subf)
+
+            // console.log(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+   apply()
+
+}
+    rform.addEventListener("submit", logform)
+</script>
+</body>
+</html>
