@@ -25,7 +25,8 @@ app.use(express.urlencoded({extended:false}))
 
 const start= async()=>{
     
-    try { await connectdb("mongodb+srv://jeghosa:jsureeva@cluster0.spmtchq.mongodb.net/?retryWrites=true&w=majority")
+    try { await connectdb(process.env.MONGO_URI 
+    )
         app.listen(port,()=>console.log(`app listening on port: ${port}`))
     } catch (error) {
        console.log(error) 
